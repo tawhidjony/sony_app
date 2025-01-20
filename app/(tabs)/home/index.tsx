@@ -4,6 +4,7 @@ import Badge from '@/components/Badge';
 import { useAuthSession } from '@/providers/AuthProvider';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import moment from 'moment';
 import React, { useState } from 'react';
 import {
@@ -57,7 +58,7 @@ export default function HomeScreen() {
   // }, []);
 
   const renderCard = ({ item }:any) => (
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={() => router.push(`/home/${item.id}`)} >
       <View style={styles.imageContainer}>
         <Image
           source={{ uri: ImageUrl + item.banner }} // Placeholder image

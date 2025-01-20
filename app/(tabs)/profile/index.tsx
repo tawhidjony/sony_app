@@ -41,7 +41,7 @@ const ProfileScreen = () => {
                 </View>
             </View>
 
-            <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={() => router.push('/profile/editProfile')}>
+            <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={() => router.push('/(tabs)/profile/editProfile')}>
                 <Text style={styles.buttonText}>Edit profile</Text>
             </TouchableOpacity>
             </ScrollView>

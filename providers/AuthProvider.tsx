@@ -36,7 +36,7 @@ export default function AuthProvider  ({children}:{children: ReactNode}): ReactN
   const signIn = useCallback(async (token: string) => {
     await AsyncStorage.setItem('@token', token);
     tokenRef.current = token;
-    router.replace('/(tabs)')
+    router.replace('/(tabs)/home')
   }, []);
 
   const signOut = useCallback(async () => {
@@ -48,7 +48,7 @@ export default function AuthProvider  ({children}:{children: ReactNode}): ReactN
   const signUp = useCallback(async (token: string) => {
     await AsyncStorage.setItem('@token', token);
     tokenRef.current = null;
-    router.replace('/(tabs)')
+    router.replace('/(tabs)/home')
   }, []);
 
   return (
