@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { z } from 'zod';
 
 // Define Zod schema for validation
@@ -52,6 +52,8 @@ export default function App() {
     mutationFn: loginUser,
     mutationKey: ["login"],
   });
+
+
 
   const onSubmit = (data: LoginFormValues) => {
     mutation
@@ -141,7 +143,10 @@ export default function App() {
 
       {/* Sign In Button */}
       <TouchableOpacity style={styles.signInButton} onPress={handleSubmit(onSubmit)}>
-        <Text style={styles.signInText}>Sign In</Text>
+        {mutation.isPending ?
+            <ActivityIndicator size="small" color="#fff" animating={mutation.isPending} hidesWhenStopped />:
+            <Text style={styles.signInText}>Sign In</Text>
+        }
       </TouchableOpacity>
 
       {/* Footer */}
