@@ -1,6 +1,7 @@
 import { ImageUrl } from '@/Api/apiClient';
 import { eventList } from '@/Api/homeApi';
 import Badge from '@/components/Badge';
+import { Colors } from '@/constants/Colors';
 import { useAuthSession } from '@/providers/AuthProvider';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
@@ -87,7 +88,8 @@ export default function HomeScreen() {
       <View style={styles.capacityContainer}>
         <View style={styles.capacity}>
           <MaterialIcons name="reduce-capacity" size={16} color="black" />
-          <Text>Capacity: {item.capacity}</Text>
+          <Text>Capacity: </Text>
+          <Badge text={item.capacity} backgroundColor={Colors.light.tint} textColor="#fff" size="small" />
         </View>
         <View style={styles.location}>
           <Ionicons name="location-outline" size={16} color="black" />

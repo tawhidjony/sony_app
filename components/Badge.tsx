@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
   medium: {
     paddingHorizontal: 10,
     paddingVertical: 4,
+
   },
   large: {
     paddingHorizontal: 14,
@@ -50,12 +51,15 @@ const styles = StyleSheet.create({
   },
   textSmall: {
     fontSize: 10,
+    textTransform: 'capitalize',
   },
   textMedium: {
     fontSize: 14,
+    textTransform: 'capitalize',
   },
   textLarge: {
     fontSize: 16,
+    textTransform: 'capitalize',
   },
 });
 

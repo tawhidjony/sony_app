@@ -34,3 +34,13 @@ export const loginUser = async (user: any) => {
   );
   return response.data;
 };
+
+export const logOut = async (token: any) => {
+  const response = await axios.get(BaseUrl + "/logout", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};

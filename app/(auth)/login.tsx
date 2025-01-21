@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Image, StyleSheet, Switch, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { z } from 'zod';
 
 // Define Zod schema for validation
@@ -26,7 +26,7 @@ const loginSchema = z.object({
       invalid_type_error: 'Password must be a string',
     })
     .min(6, { message: 'Password must be at least 6 characters' }),
-  rememberMe: z.boolean().optional(),
+  // rememberMe: z.boolean().optional(),
 })
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -45,7 +45,7 @@ export default function App() {
     defaultValues: {
       identify: '',
       password: '',
-      rememberMe: false
+      // rememberMe: false
     }
   });
   const mutation = useMutation({
@@ -119,7 +119,7 @@ export default function App() {
       </View>
 
       {/* Remember Me and Show Password */}
-      <View style={styles.rememberContainer}>
+      {/* <View style={styles.rememberContainer}>
         <Controller
           control={control}
           name="rememberMe"
@@ -137,7 +137,7 @@ export default function App() {
         
         />
    
-      </View>
+      </View> */}
 
       {/* Sign In Button */}
       <TouchableOpacity style={styles.signInButton} onPress={handleSubmit(onSubmit)}>

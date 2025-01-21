@@ -1,109 +1,199 @@
-import { Image, Platform, StyleSheet } from 'react-native';
-
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { ImageUrl } from '@/Api/apiClient';
+import { bookingList } from '@/Api/homeApi';
+import Badge from '@/components/Badge';
+import { useAuthSession } from '@/providers/AuthProvider';
+import { Ionicons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import moment from 'moment';
+import React, { useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
 export default function BookingScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
+  const {token} = useAuthSession();
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
+  const {data, isLoading, refetch} = useQuery({
+    queryKey: ['BookingList'],
+    queryFn: () => bookingList(token?.current, page),
+  });
+
+  const StatusBadge = ({status}:any) => {
+    switch (status) {
+      case 'confirmed':
+        return <Badge text={status} backgroundColor="#27ae60" textColor="#fff" size="small" />;
+      case 'pending':
+        return <Badge text={status} backgroundColor="#8bc34a" textColor="#fff" size="small" />;
+      case 'cancelled':
+        return <Badge text={status} backgroundColor="#e74c3c" textColor="#fff" size="small" />;
+      case 'completed':
+        return <Badge text={status} backgroundColor="#2196f3" textColor="#fff" size="small" />;
+      default:
+        return null;
+    }
+  }
+
+  const renderCard = ({ item }:any) => {
+    return (
+        <TouchableOpacity style={styles.card} onPress={() => router.push(`/home/${item.id}`)} >
+
+          <View style={styles.cardContentBody} >
+            <View style={styles.imageContainer}>
+              <Image
+                source={{ uri: ImageUrl + item?.event?.banner }} // Placeholder image
+                style={styles.image}
+              />
+            </View>
+            <View style={styles.cardContent} >
+              <View>
+                <Text style={styles.title}>
+                  {item?.event?.name.length > 30 ? item?.event?.name.substring(0, 30) + '...' : item?.event?.name }
+                </Text>
+                <Text style={styles.description}>
+                  {item?.event?.description.length > 80 ? item?.event?.description.substring(0, 80) + '...' : item?.event?.description }
+                </Text>
+              </View> 
+            </View>
+          </View>
+
+          <View style={styles.cardContentFooter}>
+            <View style={styles.capacityContainer}>
+              <View style={styles.capacity}>
+                <Text>Date: {moment(item?.created_at).format('DD MMM YYYY')}</Text>
+                <StatusBadge status={item?.status} />
+              </View>
+              <View style={styles.location}>
+                <Ionicons name="location-outline" size={16} color="black" />
+                <Text > {item?.event?.location} </Text>
+              </View>
+            </View> 
+          </View>
+        </TouchableOpacity>
+    );
+  }
+
+  const renderFooter = () => {
+    if (!isLoading) return null;
+    return (
+      <View style={styles.footer}>
+        <ActivityIndicator size="small" color="#000" />
+      </View>
+    );
+  };
+
+  const handleLoadMore = () => {
+    if (!isLoading && hasMore) {
+      // fetchData();
+    }
+  };
+
+  return (<>
+    <FlatList
+      data={data?.data?.data}
+      renderItem={renderCard}
+      keyExtractor={(item) => item.id}
+      contentContainerStyle={styles.list}
+      onEndReached={handleLoadMore}
+      onEndReachedThreshold={0.1}
+      ListFooterComponent={renderFooter}
+      refreshControl={
+        <RefreshControl
+          refreshing={isLoading}
+          onRefresh={refetch}
+          colors={['#f1c40f']}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
-  );
-}
+      }
+    />
+    {data?.data.length == 0 && (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontSize: 20 }}>No Data Found</Text>
+      </View>
+    )}
+  </>);
+};
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  list: {
+    padding: 10,
   },
-  titleContainer: {
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 1,
+    marginBottom: 16,
+  },
+  cardContentBody:{
     flexDirection: 'row',
-    gap: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f2f3',
+    padding: 5
+  },
+  imageContainer: {
+    position: 'relative',
+    marginBottom: 8,
+    flexBasis: '30%',
+  },
+  image: {
+    height: 70,
+    borderRadius: 8,
+  },
+  cardContent:{
+    flexBasis: '70%',
+    paddingHorizontal: 8
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 5,
+  },
+  description: {
+    width: '100%',
+    fontSize: 12,
+    color: '#555',
+  },
+  cardContentFooter:{
+    padding: 5
+  },
+  capacityContainer:{
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+
+  },
+  capacity: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    fontSize: 16,
+    color: '#777',
+    gap: 6,
+    
+  },
+  location: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    fontSize: 16,
+    color: '#777',
+  },
+  footer: {
+    paddingVertical: 16,
+    alignItems: 'center',
   },
 });
+
