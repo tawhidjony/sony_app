@@ -50,3 +50,17 @@ export const profile = async (token: any) => {
   });
   return response.data;
 };
+
+export const profileUpdate = async ({ id, body, token }: any) => {
+  const response = await axios.put(
+    BaseUrl + "/profile/" + id + "/update",
+    body,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};

@@ -29,6 +29,7 @@ export default function RootLayout() {
         headerShown: true,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
+        tabBarHideOnKeyboard: true,
         tabBarStyle: Platform.select({
           ios: {
             position: 'absolute',
