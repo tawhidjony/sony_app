@@ -6,6 +6,7 @@ import { useAuthSession } from '@/providers/AuthProvider';
 import { AntDesign, Entypo, FontAwesome, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -36,7 +37,7 @@ const ProfileScreen = () => {
     }
     return (
             <ScrollView style={styles.container}>
-                <View style={[styles.header, { backgroundColor: Colors[colorScheme ?? 'light'].tint }]}>
+                <View style={[styles.header, { backgroundColor: Colors.light.tint }]}>
                     <Image source={{ uri: data?.user_details?.visa_image }} style={styles.avatar} />
                     <Text style={styles.username}>{data?.name}</Text>
                 </View>

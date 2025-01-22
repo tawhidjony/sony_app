@@ -7,6 +7,8 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import AuthProvider from '@/providers/AuthProvider';
+import { StatusBar } from "react-native";
+import { Colors } from "@/constants/Colors";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -31,6 +33,7 @@ export default function RootLayout():React.ReactNode {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <StatusBar backgroundColor={Colors.light.background} barStyle="dark-content" />
       <AuthProvider>
         <Slot />
       </AuthProvider>
