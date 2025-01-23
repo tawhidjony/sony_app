@@ -8,9 +8,9 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
 import moment from "moment";
-import React from "react";
+import React, { Fragment } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { z } from 'zod';
 
 const scheduleSchema = z.object({
@@ -25,10 +25,12 @@ export default function ProductDetailScreen() {
     const id = params.get('id');
     const { token } = useAuthSession(); 
 
-    const { data } = useQuery({
+    const { data, isLoading, error, isFetchedAfterMount } = useQuery({
         queryKey: ['eventDetail'],
         queryFn: () => eventDetail(token?.current, id),
     });
+
+  
 
     const mutation = useMutation({
         mutationFn: eventBooking,
@@ -54,10 +56,11 @@ export default function ProductDetailScreen() {
         });
     };
       
+    if (isLoading) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" /></View>
 
     return (
         <View style={styles.container}>
-            {/* Image and Back Button */}
+            {!isFetchedAfterMount ?  (<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" /></View>) : (<Fragment>
             <View style={styles.imageContainer}>
                 <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
                     <AntDesign name="left" size={24} color="white" />
@@ -119,6 +122,7 @@ export default function ProductDetailScreen() {
                     <Text style={styles.buttonText}>Book Now</Text>
                 </TouchableOpacity>
             </View>
+            </Fragment>)}
         </View>
     );
 }

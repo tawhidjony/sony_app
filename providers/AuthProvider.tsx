@@ -30,6 +30,12 @@ export default function AuthProvider  ({children}:{children: ReactNode}): ReactN
       const token = await AsyncStorage.getItem('@token');
       tokenRef.current = token || '';
       setIsLoading(false);
+      if(!token) {
+        router.replace('/login');
+      }else {
+        router.replace('/(tabs)/home');
+      }
+      
     })()
   }, []);
 

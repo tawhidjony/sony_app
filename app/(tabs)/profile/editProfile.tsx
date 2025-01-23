@@ -71,7 +71,7 @@ const ProfileScreen = () => {
     });
     const onSubmit = (formData: EditProfileSchema) => {
         mutation.mutateAsync({
-            id: data?.user_details?.id,
+            id: data?.id,
             body: {
                 name: formData.name,
                 phone: formData.phone,

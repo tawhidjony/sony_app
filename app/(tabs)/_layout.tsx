@@ -1,21 +1,22 @@
 import { Redirect, Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, Text } from 'react-native';
+import { ActivityIndicator, Platform, View } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { useAuthSession } from '@/providers/AuthProvider';
 import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
   const {token, isLoading} = useAuthSession()
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
   if (!token?.current) {
