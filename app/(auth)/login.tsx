@@ -62,7 +62,6 @@ export default function App() {
       signIn(response.token);
     })
     .catch((err) => {
-      console.log(err);
     });
   };
 

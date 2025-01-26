@@ -5,14 +5,14 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
+import { Colors } from "@/constants/Colors";
 import { useColorScheme } from '@/hooks/useColorScheme';
 import AuthProvider from '@/providers/AuthProvider';
 import { StatusBar } from "react-native";
-import { Colors } from "@/constants/Colors";
-import { useReactQueryDevTools } from '@dev-plugins/react-query';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
 const queryClient = new QueryClient();
 
 export default function RootLayout():React.ReactNode {
@@ -31,7 +31,7 @@ export default function RootLayout():React.ReactNode {
     return null;
   }
   const isAuthenticated = false;
-  useReactQueryDevTools(queryClient);
+  // useReactQueryDevTools(queryClient);
   return (
     <QueryClientProvider client={queryClient}>
       <StatusBar backgroundColor={Colors.light.background} barStyle="dark-content" />

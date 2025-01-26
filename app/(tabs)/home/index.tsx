@@ -22,6 +22,7 @@ import {
 export default function HomeScreen() {
   const {token} = useAuthSession();
   const [page, setPage] = useState(1);
+
   const {data, isLoading, refetch} = useQuery({
     queryKey: ['events'],
     queryFn: () => eventList(token?.current, page),
@@ -75,7 +76,7 @@ export default function HomeScreen() {
       </View>
       <View>
         <Text style={styles.title}>
-          {item.name.length > 90 ? item.name.substring(0, 90) + '...' : item.name.substring(0, 90) }
+          {item.name.length > 70 ? item.name.substring(0, 70) + '...' : item.name.substring(0, 70) }
         </Text>
         <Text style={styles.description}>
           {item.description.length > 100 ? item.description.substring(0, 100) + '...' : item.description.substring(0, 100) }
@@ -113,6 +114,7 @@ export default function HomeScreen() {
       // fetchData();
     }
   };
+
 
   return (
     <FlatList

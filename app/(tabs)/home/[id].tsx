@@ -1,10 +1,12 @@
 import { ImageUrl } from "@/Api/apiClient";
 import { eventBooking, eventDetail } from "@/Api/homeApi";
+import { ShowToastWithGravity } from "@/components/utils/HotToastNotification";
+import RNActivityIndicator from "@/components/utils/RNActivityIndicatior";
 import { Colors } from "@/constants/Colors";
 import { useAuthSession } from "@/providers/AuthProvider";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
 import moment from "moment";
@@ -21,26 +23,32 @@ type ScheduleType = z.infer<typeof scheduleSchema>;
 
 
 export default function ProductDetailScreen() {
+  const queryClient = useQueryClient();
+  console.log(queryClient);
+  
   const params = useSearchParams();
   const id = params.get('id');
   const { token } = useAuthSession();
 
   const { data, isLoading, error, isFetchedAfterMount } = useQuery({
-    queryKey: ['eventDetail'],
+    queryKey: ['eventDetail', id],
     queryFn: () => eventDetail(token?.current, id),
   });
 
-
-
   const mutation = useMutation({
     mutationFn: eventBooking,
-    mutationKey: ["eventBooking", "BookingList"],
+    mutationKey: ["eventBooking"],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["BookingList"] });
+    }
 
   });
 
   const { control, handleSubmit, formState: { errors } } = useForm<ScheduleType>({
     resolver: zodResolver(scheduleSchema),
   });
+
+
 
   const onSubmit = (data: ScheduleType) => {
     const dataModify = {
@@ -53,15 +61,16 @@ export default function ProductDetailScreen() {
     mutation.mutateAsync(dataModify).then(() => {
       router.push('/booking')
     }).catch((error) => {
-      console.error('Error booking event:', error);
+      if (error) {
+        ShowToastWithGravity(error.response.data.message || 'Something went wrong');
+      }
     });
   };
 
-  if (isLoading) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" /></View>
+  if (isLoading) return <RNActivityIndicator />
 
   return (
     <View style={styles.container}>
-      {!isFetchedAfterMount ? (<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" /></View>) : (<Fragment>
         <View style={styles.imageContainer}>
           <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
             <AntDesign name="left" size={24} color="white" />
@@ -76,7 +85,7 @@ export default function ProductDetailScreen() {
         </View>
 
         {/* Content */}
-        <ScrollView style={styles.content}>
+        <ScrollView contentContainerStyle={{paddingBottom: 80}} style={styles.content}>
           <Text style={styles.title}>{data?.name}</Text>
 
           {/* Product Details */}
@@ -128,7 +137,6 @@ export default function ProductDetailScreen() {
             }
           </TouchableOpacity>
         </View>
-      </Fragment>)}
     </View>
   );
 }

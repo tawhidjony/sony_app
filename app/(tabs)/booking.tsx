@@ -19,11 +19,12 @@ import {
 } from 'react-native';
 
 export default function BookingScreen() {
+
   const {token} = useAuthSession();
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const {data, isLoading, refetch} = useQuery({
+  const {data, isLoading, refetch, isFetching} = useQuery({
     queryKey: ['BookingList'],
     queryFn: () => bookingList(token?.current, page),
   });
@@ -96,6 +97,14 @@ export default function BookingScreen() {
       // fetchData();
     }
   };
+
+  if (isFetching) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (<>
     <FlatList
