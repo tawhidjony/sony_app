@@ -14,117 +14,123 @@ import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacit
 import { z } from 'zod';
 
 const scheduleSchema = z.object({
-    schedule: z.number({ required_error: 'Schedule is required', invalid_type_error: 'Schedule is required'}).min(1, { message: 'Schedule is required' }),
+  schedule: z.number({ required_error: 'Schedule is required', invalid_type_error: 'Schedule is required' }).min(1, { message: 'Schedule is required' }),
 });
 
 type ScheduleType = z.infer<typeof scheduleSchema>;
 
 
 export default function ProductDetailScreen() {
-    const params = useSearchParams();
-    const id = params.get('id');
-    const { token } = useAuthSession(); 
+  const params = useSearchParams();
+  const id = params.get('id');
+  const { token } = useAuthSession();
 
-    const { data, isLoading, error, isFetchedAfterMount } = useQuery({
-        queryKey: ['eventDetail'],
-        queryFn: () => eventDetail(token?.current, id),
+  const { data, isLoading, error, isFetchedAfterMount } = useQuery({
+    queryKey: ['eventDetail'],
+    queryFn: () => eventDetail(token?.current, id),
+  });
+
+
+
+  const mutation = useMutation({
+    mutationFn: eventBooking,
+    mutationKey: ["eventBooking", "BookingList"],
+
+  });
+
+  const { control, handleSubmit, formState: { errors } } = useForm<ScheduleType>({
+    resolver: zodResolver(scheduleSchema),
+  });
+
+  const onSubmit = (data: ScheduleType) => {
+    const dataModify = {
+      token: token?.current,
+      body: {
+        event_id: id,
+        schedule_id: data.schedule
+      }
+    }
+    mutation.mutateAsync(dataModify).then(() => {
+      router.push('/booking')
+    }).catch((error) => {
+      console.error('Error booking event:', error);
     });
+  };
 
-  
+  if (isLoading) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" /></View>
 
-    const mutation = useMutation({
-        mutationFn: eventBooking,
-        mutationKey: ["eventBooking"],
-    });
-
-    const { control, handleSubmit, formState: { errors } } = useForm<ScheduleType>({
-        resolver: zodResolver(scheduleSchema),
-    });
-
-    const onSubmit = (data: ScheduleType) => {
-        const dataModify = {
-            token: token?.current,
-            body: {
-                event_id: id,
-                schedule_id: data.schedule
-            }
-        }
-        mutation.mutateAsync(dataModify).then(() => {
-            router.back();
-        }).catch((error) => {
-            console.error('Error booking event:', error);
-        });
-    };
-      
-    if (isLoading) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" /></View>
-
-    return (
-        <View style={styles.container}>
-            {!isFetchedAfterMount ?  (<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" /></View>) : (<Fragment>
-            <View style={styles.imageContainer}>
-                <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-                    <AntDesign name="left" size={24} color="white" />
-                </TouchableOpacity>
-                <Image
-                source={{
-                    uri: ImageUrl + data?.banner,
-                }}
-                style={styles.productImage}
-                resizeMode="cover"
-                />
-            </View>
-
-            {/* Content */}
-            <ScrollView style={styles.content}>
-                <Text style={styles.title}>{data?.name}</Text>
-
-                {/* Product Details */}
-                <Text style={styles.productDetailsTitle}>Job Details:</Text>
-                <Text style={styles.productDetails}>
-                    {data?.description}
-                </Text>
-
-                <View style={styles.radioButtonContainer}>
-                    <Text style={styles.radioTitle}>Select Schedule:</Text>
-                    {data?.schedules.map((option:any) =>{
-                        return (
-                            <Controller
-                                control={control}
-                                name="schedule"
-                                key={option.id}
-                                render={({ field: { onChange, value } }) => {
-                                    return (<View>
-                                        <TouchableOpacity
-                                            key={option.id}
-                                            style={styles.radioContainer}
-                                            onPress={() => {
-                                                onChange(option.id);
-                                            }}
-                                        >
-                                            <View style={[ styles.outerCircle, value === option.id && styles.outerCircleSelected]} >
-                                            {value === option.id && <View style={styles.innerCircle} />}
-                                            </View>
-                                            <Text style={styles.radioText}>{moment(option.start_time, "HH:mm:ss").format('hh:mm A')} - {moment(option.end_time, "HH:mm:ss").format('hh:mm A')}</Text>
-                                        </TouchableOpacity>
-                                        {errors.schedule && <Text style={styles.errorText}>{errors.schedule.message}</Text>}
-                                    </View>)
-                                }}
-                            />
-                        );
-                    })}
-                </View>
-            </ScrollView>
-
-            {/* Add to Cart Buttons */}
-            <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-                    <MaterialIcons name="event" size={18} color="white" />
-                    <Text style={styles.buttonText}>Book Now</Text>
-                </TouchableOpacity>
-            </View>
-            </Fragment>)}
+  return (
+    <View style={styles.container}>
+      {!isFetchedAfterMount ? (<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" /></View>) : (<Fragment>
+        <View style={styles.imageContainer}>
+          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+            <AntDesign name="left" size={24} color="white" />
+          </TouchableOpacity>
+          <Image
+            source={{
+              uri: ImageUrl + data?.banner,
+            }}
+            style={styles.productImage}
+            resizeMode="cover"
+          />
         </View>
-    );
+
+        {/* Content */}
+        <ScrollView style={styles.content}>
+          <Text style={styles.title}>{data?.name}</Text>
+
+          {/* Product Details */}
+          <Text style={styles.productDetailsTitle}>Job Details:</Text>
+          <Text style={styles.productDetails}>
+            {data?.description}
+          </Text>
+
+          <View style={styles.radioButtonContainer}>
+            <Text style={styles.radioTitle}>Select Schedule:</Text>
+            {data?.schedules.map((option: any) => {
+              return (
+                <Controller
+                  control={control}
+                  name="schedule"
+                  key={option.id}
+                  render={({ field: { onChange, value } }) => {
+                    return (<View>
+                      <TouchableOpacity
+                        key={option.id}
+                        style={styles.radioContainer}
+                        onPress={() => {
+                          onChange(option.id);
+                        }}
+                      >
+                        <View style={[styles.outerCircle, value === option.id && styles.outerCircleSelected]} >
+                          {value === option.id && <View style={styles.innerCircle} />}
+                        </View>
+                        <Text style={styles.radioText}>{moment(option.start_time, "HH:mm:ss").format('hh:mm A')} - {moment(option.end_time, "HH:mm:ss").format('hh:mm A')}</Text>
+                      </TouchableOpacity>
+                      {errors.schedule && <Text style={styles.errorText}>{errors.schedule.message}</Text>}
+                    </View>)
+                  }}
+                />
+              );
+            })}
+          </View>
+        </ScrollView>
+
+        {/* Add to Cart Buttons */}
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
+            {mutation.isPending ?
+              <ActivityIndicator size="small" color="#fff" animating={mutation.isPending} hidesWhenStopped /> : (
+                <Fragment>
+                  <MaterialIcons name="event" size={18} color="white" />
+                  <Text style={styles.buttonText}>Book Now</Text>
+                </Fragment>)
+            }
+          </TouchableOpacity>
+        </View>
+      </Fragment>)}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -197,10 +203,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  radioButtonContainer:{
+  radioButtonContainer: {
     marginTop: 16,
   },
-  radioTitle:{
+  radioTitle: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
@@ -234,7 +240,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#000",
   },
-  errorText:{
+  errorText: {
     color: "red",
     fontSize: 12,
   },

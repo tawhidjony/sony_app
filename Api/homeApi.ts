@@ -52,7 +52,7 @@ export const profile = async (token: any) => {
 };
 
 export const profileUpdate = async ({ id, body, token }: any) => {
-  const response = await axios.put(
+  const response = await axios.patch(
     BaseUrl + "/profile/" + id + "/update",
     body,
     {

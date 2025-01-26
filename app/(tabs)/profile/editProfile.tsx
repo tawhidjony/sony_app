@@ -6,9 +6,10 @@ import { Colors } from '@/constants/Colors';
 import { useAuthSession } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import React, { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { z } from 'zod';
 
 
@@ -71,7 +72,7 @@ const ProfileScreen = () => {
     });
     const onSubmit = (formData: EditProfileSchema) => {
         mutation.mutateAsync({
-            id: data?.id,
+            id: data?.data?.id,
             body: {
                 name: formData.name,
                 phone: formData.phone,
@@ -85,6 +86,7 @@ const ProfileScreen = () => {
             token: token?.current
         }).then(() => {
             console.log('Profile updated successfully');
+            router.back();
         }).catch((error) => {
             console.error('Error updating profile:', error);
         })
@@ -93,14 +95,14 @@ const ProfileScreen = () => {
 
     useEffect(() => {
         methods.reset({
-            name: data?.user_details?.name,
-            phone: data?.user_details?.phone,
-            address: data?.user_details?.address,
-            city: data?.user_details?.city,
+            name: data?.data?.user_details?.name,
+            phone: data?.data?.user_details?.phone,
+            address: data?.data?.user_details?.address,
+            city: data?.data?.user_details?.city,
             visa_expiry_date: new Date(),
-            visa_image: data?.user_details?.visa_image,
-            bank_name: data?.user_details?.bank_name,
-            bank_account_number: data?.user_details?.bank_account_number,
+            visa_image: data?.data?.user_details?.visa_image,
+            bank_name: data?.data?.user_details?.bank_name,
+            bank_account_number: data?.data?.user_details?.bank_account_number,
         });
     }, [data]);
    
@@ -162,7 +164,10 @@ const ProfileScreen = () => {
 
                 </View>
                 <TouchableOpacity style={styles.button} onPress={methods.handleSubmit(onSubmit)} >
-                    <Text style={styles.buttonText}>Save Profile</Text>
+                    {mutation.isPending ?
+                        <ActivityIndicator size="small" color="#fff" animating={mutation.isPending} hidesWhenStopped />:
+                        <Text style={styles.buttonText}>Save Profile</Text>
+                    }
                 </TouchableOpacity>
             </FormProvider>
         </ScrollView>

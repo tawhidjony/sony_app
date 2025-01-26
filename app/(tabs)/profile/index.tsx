@@ -1,4 +1,5 @@
 import { logOut } from '@/Api';
+import { BaseUrl } from '@/Api/apiClient';
 import { profile } from '@/Api/homeApi';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -7,14 +8,14 @@ import { AntDesign, Entypo, FontAwesome, FontAwesome6, Ionicons } from '@expo/ve
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const ProfileScreen = () => {
     const colorScheme = useColorScheme();
     const { token, signOut } = useAuthSession();
 
-    const {data, isLoading, isError, error} = useQuery({
+    const {data, isLoading, isError, error, refetch} = useQuery({
         queryKey: ['profile'],
         queryFn: () => profile(token?.current)
     })
@@ -35,43 +36,55 @@ const ProfileScreen = () => {
           console.log(err);
         });
     }
+
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" />
+            </View>
+        );
+    }
+
+
+
+    
     return (
             <ScrollView style={styles.container}>
                 <View style={[styles.header, { backgroundColor: Colors.light.tint }]}>
-                    <Image source={{ uri: data?.user_details?.visa_image }} style={styles.avatar} />
-                    <Text style={styles.username}>{data?.name}</Text>
+                    <Image source={{ uri: BaseUrl + data?.data.user_details?.visa_image }} style={styles.avatar} />
+                    <Text style={styles.username}>{data?.data.name}</Text>
                 </View>
                 
                 <View style={styles.info}>
                     <View style={styles.infoItem}>
                         <Ionicons name="person-outline" size={20} color="#777" />
-                        <Text style={styles.infoText}>{data?.user_details?.name}</Text>
+                        <Text style={styles.infoText}>{data?.data.user_details?.name}</Text>
                     </View>
                     <View style={styles.infoItem}>
                         <Ionicons name="call-outline" size={20} color="#777" />
-                        <Text style={styles.infoText}>{data?.user_details?.phone}</Text>
+                        <Text style={styles.infoText}>{data?.data.user_details?.phone}</Text>
                     </View>
                     <View style={styles.infoItem}>
                         <Entypo name="address" size={24} color="black" />
-                        <Text style={styles.infoText}>{data?.user_details?.address}</Text>
+                        <Text style={styles.infoText}>{data?.data.user_details?.address}</Text>
                     </View>
                     <View style={styles.infoItem}>
                         <FontAwesome6 name="cc-visa" size={20} color="black" />
-                        <Text style={styles.infoText}>{data?.user_details?.visa_expiry_date}</Text>
+                        <Text style={styles.infoText}>{data?.data.user_details?.visa_expiry_date}</Text>
                     </View>
                     <View style={styles.infoItem}>
                         <FontAwesome name="bank" size={20} color="black" />
-                        <Text style={styles.infoText}>{data?.user_details?.bank_name}</Text>
+                        <Text style={styles.infoText}>{data?.data.user_details?.bank_name}</Text>
                     </View>
                     <View style={styles.infoItem}>
                         <AntDesign name="creditcard" size={20} color="black" />
-                        <Text style={styles.infoText}>{data?.user_details?.bank_account_number}</Text>
+                        <Text style={styles.infoText}>{data?.data.user_details?.bank_account_number}</Text>
                     </View>
                     <Text style={{fontSize:26}} >Visa Image:</Text>
                 </View>
                 <View style={styles.visaImageContainer}>
                     <View style={styles.visaImageCard}>
-                        <Image source={{ uri: data?.user_details?.visa_image }} style={styles.visaImage} />
+                        <Image source={{ uri: BaseUrl + data?.data.user_details?.visa_image }} style={styles.visaImage} />
                     </View>
                 </View>
 
