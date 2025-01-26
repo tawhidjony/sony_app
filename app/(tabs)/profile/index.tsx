@@ -52,13 +52,13 @@ const ProfileScreen = () => {
             title: 'Edit Profile',
             subtitle: 'Change profile picture, number, E-mail',
             icon: 'edit',
-            onPress: GoToPaymentInfo
+            onPress: () =>  router.push('/(tabs)/profile/editProfile')
         },
         {
             title: 'Add Payment Information',
             subtitle: 'Securely add payment method',
             icon: 'credit-card',
-            onPress: () =>  router.push('/(tabs)/profile/editProfile')
+            onPress: () =>  router.push('/(tabs)/profile/paymentInfo')
         },
         {
             title: 'Change Password',
@@ -91,13 +91,13 @@ const ProfileScreen = () => {
         <View style={styles.profileCard}>
             <Image
                 source={{
-                    uri: ImageUrl + profileInfo?.avatar, // Replace with your image URL
+                    uri: ImageUrl + profileInfo?.data?.avatar, // Replace with your image URL
                 }}
                 style={styles.profileImage}
             />
             <View>
-            <Text style={styles.profileName}>{profileInfo?.name}</Text>
-            <Text style={styles.profileEmail}>{profileInfo?.email ? profileInfo?.email : profileInfo?.phone}</Text>
+            <Text style={styles.profileName}>{profileInfo?.data?.name}</Text>
+            <Text style={styles.profileEmail}>{profileInfo?.data?.email ? profileInfo?.data?.email : profileInfo?.data?.phone}</Text>
             </View>
         </View>
 
@@ -119,42 +119,17 @@ const ProfileScreen = () => {
                     </TouchableOpacity>
                 ))}
             </Fragment>
-        </View>
-
-        {/* Preferences Section */}
-        <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Preferences</Text>
-            {renderOption('FAQ', 'Securely add payment method', 'help-outline')}
-            {renderOption('Log Out', 'Securely log out of Account', 'logout', '#ef4444', LogOutAction)}
-        </View>
+        </View>    
         </View>
     </ScrollView>
   );
 };
 
-const renderOption = (title:string, subtitle:string, iconName:any, iconColor = '#6d5dfc', onPress?:any) => {
-    return (<Fragment>
-        
-            <TouchableOpacity style={styles.optionRow} onPress={() => onPress && onPress()} >
-                <View style={styles.optionLeft}>
-                <View style={styles.iconContainer}>
-                    <MaterialIcons name={iconName} size={20} color={iconColor} />
-                </View>
-                <View>
-                    <Text style={styles.optionTitle}>{title}</Text>
-                    <Text style={styles.optionSubtitle}>{subtitle}</Text>
-                </View>
-                </View>
-                <Ionicons name="chevron-forward-outline" size={20} color="#b0b0b0" />
-            </TouchableOpacity>
-      
-    </Fragment>)
-}
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fb',
     paddingHorizontal: 16,
     paddingVertical: 16,
   },

@@ -1,4 +1,5 @@
 import { loginUser } from '@/Api';
+import { ShowToastWithGravity } from '@/components/utils/HotToastNotification';
 import { useAuthSession } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
@@ -62,6 +63,10 @@ export default function App() {
       signIn(response.token);
     })
     .catch((err) => {
+      console.log(err);
+      if (err) {
+        ShowToastWithGravity(err.response.data.message || 'Something went wrong');
+      }
     });
   };
 
