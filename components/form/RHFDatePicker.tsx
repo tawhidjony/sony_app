@@ -12,12 +12,12 @@ type RHFTextInputProps = {
 } & TextInputProps;
 
 const RHFDatePicker = ({name, inputLabel, errors, ...otherProps}: RHFTextInputProps) => {
-    const {control} = useFormContext();
+    const {control, getValues} = useFormContext();
     const [showDatePicker, setShowDatePicker] = React.useState(false);
 
     const toggleDatePicker = () => {
         setShowDatePicker(!showDatePicker);
-    }
+    }   
 
     return (
         <View style={styles.inputContainer}>
@@ -25,13 +25,17 @@ const RHFDatePicker = ({name, inputLabel, errors, ...otherProps}: RHFTextInputPr
                 control={control}
                 name={name}
                 render={({ field: { onChange, value } }) => {
+
+                    const formattedDate = moment(value, "DD-MM-YYYY").toISOString();
+                    const dateFormated = moment(formattedDate).format("DD-MM-YYYY")
+                    
                     return (
                         <Fragment>
                             <Text style={{marginBottom: 5}}>{inputLabel}</Text>
                             <Pressable onPress={toggleDatePicker} style={styles.dateInputWrapper}>
                                 <MaterialIcons name="date-range" size={24} color="black" style={styles.dateIcon} />
                                 <TextInput
-                                    value={moment(value).format('DD-MM-YYYY')}
+                                    value={dateFormated}
                                     style={[styles.input, errors && errors[name] && styles.errorInput]}
                                     keyboardType="ascii-capable"
                                     {...otherProps}
@@ -40,7 +44,7 @@ const RHFDatePicker = ({name, inputLabel, errors, ...otherProps}: RHFTextInputPr
                             </Pressable>
                             {showDatePicker && (
                                 <DateTimePicker
-                                    value={moment(value).toDate()}
+                                    value={new Date()}
                                     mode="date"
                                     display="spinner"
                                     onChange={(event, selectedDate) => {

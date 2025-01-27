@@ -8,8 +8,8 @@ type RHFTextInputProps = {
     errors?: any;
 } & TextInputProps;
 
-const RHFTextInput = ({name, inputLabel, errors, ...otherProps}: RHFTextInputProps) => {
-    const {control} = useFormContext();
+const RHFTextInput = ({ name, inputLabel, errors, ...otherProps }: RHFTextInputProps) => {
+    const { control } = useFormContext();
     return (
         <View style={styles.inputContainer}>
             <Controller
@@ -18,7 +18,7 @@ const RHFTextInput = ({name, inputLabel, errors, ...otherProps}: RHFTextInputPro
                 render={({ field: { onChange, value }, formState: { errors } }) => {
                     return (
                         <Fragment>
-                           {inputLabel && <Text style={{marginBottom: 5}}>{inputLabel}</Text>}
+                            {inputLabel && <Text style={{ marginBottom: 5 }}>{inputLabel}</Text>}
                             <TextInput
                                 style={[styles.input, errors && errors[name] && styles.errorInput]}
                                 keyboardType="ascii-capable"
@@ -30,7 +30,7 @@ const RHFTextInput = ({name, inputLabel, errors, ...otherProps}: RHFTextInputPro
                     );
                 }}
             />
-            {errors && errors[name] && <Text style={{ color: 'red' }}>{errors[name].message}</Text>}
+            {errors && errors[name] && <Text style={styles.errorText}>{errors[name]?.message as string}</Text>}
         </View>
     )
 }
@@ -39,7 +39,7 @@ export default RHFTextInput
 
 const styles = StyleSheet.create({
     inputContainer: {
-        marginBottom: 15,
+        marginBottom: 16,
     },
     input: {
         width: '100%',
@@ -51,9 +51,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#1F2937',
         backgroundColor: '#FFFFFF',
-        marginBottom:5
+        marginBottom: 5
     },
-        errorInput: {
+    errorInput: {
         borderColor: '#EF4444',
+    },
+    errorText: {
+        color: 'red',
+        marginTop: 5,
     },
 })

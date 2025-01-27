@@ -60,7 +60,12 @@ export default function HomeScreen() {
   // }, []);
 
   const renderCard = ({ item }:any) => (
-    <TouchableOpacity style={styles.card} onPress={() => router.push(`/home/${item.id}`)} >
+    <TouchableOpacity 
+      style={styles.card} 
+      onPress={() => router.push(`/home/${item.id}`)}
+      activeOpacity={0.7}
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+    >
       <View style={styles.imageContainer}>
         <Image
           source={{ uri: ImageUrl + item.banner }} // Placeholder image
@@ -143,9 +148,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     borderRadius: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
     elevation: 1,
     marginBottom: 16,
     padding: 16,
@@ -165,7 +168,6 @@ const styles = StyleSheet.create({
   },
   open: {
     backgroundColor: 'green',
-
     color: '#fff',
     paddingVertical: 4,
     paddingHorizontal: 8,

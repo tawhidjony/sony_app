@@ -4,11 +4,10 @@ import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { StatusBar, View } from "react-native";
 
 import { Colors } from "@/constants/Colors";
-import { useColorScheme } from '@/hooks/useColorScheme';
 import AuthProvider from '@/providers/AuthProvider';
-import { StatusBar } from "react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -16,7 +15,6 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 export default function RootLayout():React.ReactNode {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -30,14 +28,15 @@ export default function RootLayout():React.ReactNode {
   if (!loaded) {
     return null;
   }
-  const isAuthenticated = false;
-  // useReactQueryDevTools(queryClient);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <StatusBar backgroundColor={Colors.light.background} barStyle="dark-content" />
-      <AuthProvider>
-        <Slot />
-      </AuthProvider>
-    </QueryClientProvider>
+    <View style={{ flex: 1 }} pointerEvents="box-none">
+      <QueryClientProvider client={queryClient}>
+        <StatusBar backgroundColor={Colors.light.background} barStyle="dark-content" />
+        <AuthProvider>
+          <Slot />
+        </AuthProvider>
+      </QueryClientProvider>
+    </View>
   );
 }
