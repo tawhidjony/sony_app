@@ -2,6 +2,7 @@ import { userProfile, userProfileUpdate } from '@/Api/user';
 import RHFImagePicker2 from '@/components/form/RHFImagePicker2';
 import RHFSelect from '@/components/form/RHFSelect';
 import RHFTextInput from '@/components/form/RHFTextInput';
+import { ShowToastWithGravity } from '@/components/utils/HotToastNotification';
 import { Colors } from '@/constants/Colors';
 import { useAuthSession } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,13 +24,13 @@ type EditProfileSchema = z.infer<typeof editProfileSchema>;
 const EditUpdateProfileScreen = () => {
     const { token } = useAuthSession();
 
-    const { data: profileData, isLoading, isError, error, refetch } = useQuery({
+    const { data: profileData, isLoading, isError, error, isFetching } = useQuery({
         queryKey: ['profile'],
         queryFn: () => userProfile(token?.current),
-        // enabled: !!token?.current,
     });
+
     const mutation = useMutation({
-        mutationKey: ['profileUpdate'],
+        mutationKey: ['profileUpdate', profileData?.user?.id],
         mutationFn: userProfileUpdate,
     });
 
@@ -52,13 +53,42 @@ const EditUpdateProfileScreen = () => {
                     avatar: formData.avatar,
                 },
                 token: token?.current,
+            }).then((res) => {
+               if (res) {
+                ShowToastWithGravity('Profile updated successfully');
+                router.back();
+               }
+            }).catch((error) => {
+                console.error('Error updating profile:', error.response.data);
             });
-            console.log('Profile updated successfully');
-            router.back();
+            
         } catch (error) {
             console.error('Error updating profile:', error);
         }
     };
+
+    useEffect(() => {
+        if (profileData) {
+            methods.reset(profileData.user);
+        }
+    }, [profileData]);
+
+
+    if (isLoading || isFetching) {
+        return (
+            <View style={[{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.7)', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1 }]}>
+                <ActivityIndicator size="large" color={Colors.light.tint} />
+            </View>
+        )
+    }
+
+    if (isError) {
+        return <Text>{error?.message || 'An error occurred'}</Text>;
+    }
+
+ 
+
+   
 
 
 

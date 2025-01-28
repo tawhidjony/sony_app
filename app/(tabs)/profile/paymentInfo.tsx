@@ -1,13 +1,14 @@
 import { paymentInfo, paymentInfoUpdate } from '@/Api/user';
 import RHFDatePicker from '@/components/form/RHFDatePicker';
+import RHFImagePicker from '@/components/form/RHFImagePicker';
 import RHFImagePicker2 from '@/components/form/RHFImagePicker2';
 import RHFTextInput from '@/components/form/RHFTextInput';
+import { ShowToastWithGravity } from '@/components/utils/HotToastNotification';
 import { Colors } from '@/constants/Colors';
 import { useAuthSession } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import moment from 'moment';
 import React, { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -27,31 +28,38 @@ const paymentInfoSchema = z.object({
   city: z.string()
     .min(3, 'City must be at least 3 characters')
     .nonempty('City is required'),
-  visa_expiry_date: z.preprocess(
-    (arg) => {
-      if (typeof arg === 'string' || arg instanceof Date) return new Date(arg);
-      return undefined;
-    },
-    z.date({
-      required_error: 'Visa Expiry Date is required',
-      invalid_type_error: 'Invalid date format'
-    })
-  ),
+  visa_expiry_date: z.date()
+    .refine((date) => date instanceof Date && !isNaN(date.getTime()), {
+      message: "Invalid date format",
+    }),
   bank_name: z.string()
     .min(3, 'Bank Name must be at least 3 characters')
     .nonempty('Bank Name is required'),
   bank_account_number: z.string()
     .regex(/^\d{10,20}$/, 'Invalid bank account number')
     .nonempty('Bank Account Number is required'),
-  visa_image: z.string()
-    .url('Invalid image URL')
-    .nonempty('Visa Image is required')
+  visa_image: z.string().nonempty('Visa Image is required')
 });
 
 type PaymentInfoSchema = z.infer<typeof paymentInfoSchema>;
 
 const PaymentInfoScreen = () => {
   const { token } = useAuthSession();
+
+  // Fetch payment info
+  const { data: paymentData, isLoading, isError, refetch, isFetchedAfterMount, isFetching } = useQuery({
+    queryKey: ['paymentInfo'],
+    queryFn: () => paymentInfo(token?.current),
+    enabled: !!token?.current
+  });
+
+  const paymentInfoData = paymentData?.data?.user_details || {};
+
+  // Update payment info mutation
+  const updateMutation = useMutation({
+    mutationKey: ['paymentInfoUpdate', paymentData?.data?.id],
+    mutationFn: paymentInfoUpdate,
+  });
 
   // Form setup
   const methods = useForm<PaymentInfoSchema>({
@@ -69,27 +77,21 @@ const PaymentInfoScreen = () => {
     }
   });
 
-  // Fetch payment info
-  const { data: paymentData, isLoading, isError, refetch, isFetchedAfterMount, isFetching } = useQuery({
-    queryKey: ['paymentInfo'],
-    queryFn: () => paymentInfo(token?.current),
-    enabled: !!token?.current
-  });
 
-  const paymentInfoData = paymentData?.data?.user_details || {};
-
-  // Update payment info mutation
-  const updateMutation = useMutation({
-    mutationKey: ['paymentInfoUpdate'],
-    mutationFn: paymentInfoUpdate,
-    onSuccess: () => {
-      router.back();
-    },
-    onError: (error) => {
-      console.error('Error updating payment info:', error);
-    }
-  });
-
+  const onSubmit = (formData: PaymentInfoSchema) => {
+    updateMutation.mutateAsync({
+      id: paymentData.data.id,
+      body: formData,
+      token: token?.current
+    }).then((res) => {
+      if(res){
+        router.back();
+        ShowToastWithGravity('Payment info updated successfully');
+      }
+    }).catch((error) => {
+      console.log(error?.response?.data);
+    });
+  }; 
   // Set form values when data is loaded
   useEffect(() => {
     if (isFetchedAfterMount && paymentInfoData) {
@@ -98,22 +100,14 @@ const PaymentInfoScreen = () => {
         phone: paymentInfoData.phone || "",
         address: paymentInfoData.address || "",
         city: paymentInfoData.city || "",
-        visa_expiry_date: paymentInfoData.visa_expiry_date ? paymentInfoData.visa_expiry_date : new Date(),
+        visa_expiry_date: paymentInfoData.visa_expiry_date ? new Date(paymentInfoData.visa_expiry_date) : new Date(),
         visa_image: paymentInfoData.visa_image || "",
         bank_name: paymentInfoData.bank_name || "",
         bank_account_number: paymentInfoData.bank_account_number || "",
       });
     }
   }, [isFetchedAfterMount, paymentInfoData]);
-
-  const onSubmit = (formData: PaymentInfoSchema) => {
-    if (!token?.current || !paymentData?.data?.id) return;
-    updateMutation.mutate({
-      id: paymentData.data.id,
-      body: formData,
-      token: token.current
-    });
-  };
+ 
 
   // Enhanced loading and error states
   if (isLoading) {
@@ -143,12 +137,12 @@ const PaymentInfoScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      {isFetching && (
-        <View style={styles.refreshIndicator}>
-          <ActivityIndicator size="small" color={Colors.light.tint} />
-        </View>
-      )}
       <FormProvider {...methods}>
+        {updateMutation.isPending && (
+          <View style={[styles.centerContainer, { backgroundColor: 'rgba(255,255,255,0.7)', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1 }]}>
+            <ActivityIndicator size="large" color={Colors.light.tint} />
+          </View>
+        )}
         <View style={styles.info}>
           <RHFImagePicker2
             name="visa_image"
@@ -205,11 +199,7 @@ const PaymentInfoScreen = () => {
           onPress={methods.handleSubmit(onSubmit)}
           disabled={updateMutation.isPending}
         >
-          {updateMutation.isPending ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Save Profile</Text>
-          )}
+          <Text style={styles.buttonText}>Save Profile</Text>
         </TouchableOpacity>
       </FormProvider>
     </ScrollView>

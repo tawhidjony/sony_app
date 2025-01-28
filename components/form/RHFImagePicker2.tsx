@@ -28,11 +28,13 @@ const RHFImagePicker2 = ({ name, errors, inputLabel, inputTitle = 'Upload your f
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
+            base64: true
         });
 
         if (!result.canceled) {
-            setImage(result.assets[0].uri);
-            onChange(result.assets[0].uri);
+            const base64Image = `data:${result.assets[0].mimeType};base64,${result.assets[0].base64}`;
+            setImage(result.assets[0].uri); // Keep URI for preview
+            onChange(base64Image); // Pass base64 string to form
         }
     };
 

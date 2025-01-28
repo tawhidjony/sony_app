@@ -13,7 +13,7 @@ export const userProfile = async (token: any) => {
 
 export const userProfileUpdate = async ({ id, body, token }: any) => {
   const response = await axios.patch(
-    BaseUrl + "/profile/" + id + "/update",
+    BaseUrl + "/user/" + id + "/update",
     body,
     {
       headers: {

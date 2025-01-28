@@ -12,10 +12,9 @@ import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 const ProfileScreen = () => {
   const { token, signOut } = useAuthSession();
 
-  const { data: profileInfo, isLoading } = useQuery({
+  const { data: profileInfo, isLoading, isFetching, isError, error } = useQuery({
     queryKey: ['profile'],
     queryFn: () => userProfile(token?.current),
-    enabled: !!token?.current,
   });
 
   const mutation = useMutation({
@@ -76,7 +75,7 @@ const ProfileScreen = () => {
     }
   ];
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
       <ScrollView>
         <View style={styles.container}>
@@ -105,6 +104,10 @@ const ProfileScreen = () => {
         </View>
       </ScrollView>
     );
+  }
+
+  if (isError) {
+    return <Text>{error?.message || 'An error occurred'}</Text>;
   }
 
   return (

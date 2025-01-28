@@ -48,7 +48,6 @@ const RHFDatePicker = ({name, inputLabel, errors, ...otherProps}: RHFTextInputPr
                                     mode="date"
                                     display="spinner"
                                     onChange={(event, selectedDate) => {
-                                        
                                         if (event.type === 'set') {
                                             onChange(selectedDate);
                                             if(Platform.OS === 'android') {
