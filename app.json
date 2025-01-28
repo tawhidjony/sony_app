@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "SonyEvent",
-    "slug": "SonyEvent",
+    "slug": "sonyEvent",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/sony.png",
@@ -15,14 +15,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.tawhidjony.sonyApp"
+      "bundleIdentifier": "com.tawhidjony.sonyEvent"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/sony.png",
+        "foregroundImage": "./assets/images/ai.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.tawhidjony.sonyApp"
+      "package": "com.tawhidjony.sonyEvent"
     },
     "web": {
       "bundler": "metro",
@@ -49,8 +49,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "5be9ac56-d72e-434f-ac1f-b87eee4cf432"
+        "projectId": "c59440de-f843-48cd-accd-b961f4dc53f1"
       }
-    }
+    },
+    "owner": "tawhidjony"
   }
 }

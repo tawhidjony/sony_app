@@ -3373,15 +3373,23 @@ expo-asset@~11.0.2:
     invariant "^2.2.4"
     md5-file "^3.2.3"
 
-expo-blur@~14.0.2:
-  version "14.0.2"
-  resolved "https://registry.yarnpkg.com/expo-blur/-/expo-blur-14.0.2.tgz#1fe1f5c64cae9e28a3bee04764eee05318ed4672"
-  integrity sha512-6ZStKz/7F3nWfmfdeAzhJeNAtxPQAetU1FQ742XHX9uEfZjhq00CrAjyZNx2+nXpE3tGFQtXyhEE5hQJwug8yQ==
+expo-blur@~14.0.3:
+  version "14.0.3"
+  resolved "https://registry.yarnpkg.com/expo-blur/-/expo-blur-14.0.3.tgz#656d6b2442bfbbfb2a6608c6bc1151b29bce6698"
+  integrity sha512-BL3xnqBJbYm3Hg9t/HjNjdeY7N/q8eK5tsLYxswWG1yElISWZmMvrXYekl7XaVCPfyFyz8vQeaxd7q74ZY3Wrw==
 
 expo-constants@~17.0.4:
   version "17.0.4"
   resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-17.0.4.tgz#d0b653dc9a36fc0b25887c99a46d9806bdfe462d"
   integrity sha512-5c0VlZycmDyQUCMCr3Na3cpHAsVJJ+5o6KkkD4rmATQZ0++Xp/S2gpnjWyEo2riRmO91vxoyHwmAySXuktJddQ==
+  dependencies:
+    "@expo/config" "~10.0.8"
+    "@expo/env" "~0.4.1"
+
+expo-constants@~17.0.5:
+  version "17.0.5"
+  resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-17.0.5.tgz#b5deb4a4242cd6ef1f6c68e745664f69d41a0ffb"
+  integrity sha512-6SHXh32jCB+vrp2TRDNkoGoM421eOBPZIXX9ixI0hKKz71tIjD+LMr/P+rGUd/ks312MP3WK3j5vcYYPkCD8tQ==
   dependencies:
     "@expo/config" "~10.0.8"
     "@expo/env" "~0.4.1"
@@ -3427,12 +3435,12 @@ expo-linear-gradient@~14.0.2:
   resolved "https://registry.yarnpkg.com/expo-linear-gradient/-/expo-linear-gradient-14.0.2.tgz#51fb266d1c7a38349077d243e383cc3d69d4356b"
   integrity sha512-nvac1sPUfFFJ4mY25UkvubpUV/olrBH+uQw5k+beqSvQaVQiUfFtYzfRr+6HhYBNb4AEsOtpsCRkpDww3M2iGQ==
 
-expo-linking@~7.0.4:
-  version "7.0.4"
-  resolved "https://registry.yarnpkg.com/expo-linking/-/expo-linking-7.0.4.tgz#e1f1496dfcee14899f6fd3bf1f2c8af5990ac334"
-  integrity sha512-i+QaFc2zwOoq/ajePVWC+op3cOKC6nd6Wj/BJtukU71byTAbxDhbi+3m0ZFbh2i1/v/iIXRqrl3PvQcKNklPkw==
+expo-linking@~7.0.5:
+  version "7.0.5"
+  resolved "https://registry.yarnpkg.com/expo-linking/-/expo-linking-7.0.5.tgz#6f583c636a3cc29f02d67a1550b21f8e636fe2af"
+  integrity sha512-3KptlJtcYDPWohk0MfJU75MJFh2ybavbtcSd84zEPfw9s1q3hjimw3sXnH03ZxP54kiEWldvKmmnGcVffBDB1g==
   dependencies:
-    expo-constants "~17.0.4"
+    expo-constants "~17.0.5"
     invariant "^2.2.4"
 
 expo-modules-autolinking@2.0.7:
