@@ -3,6 +3,7 @@ import { ShowToastWithGravity } from '@/components/utils/HotToastNotification';
 import { useAuthSession } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -146,12 +147,19 @@ export default function App() {
       </View> */}
 
       {/* Sign In Button */}
-      <TouchableOpacity style={styles.signInButton} onPress={handleSubmit(onSubmit)}>
-        {mutation.isPending ?
-            <ActivityIndicator size="small" color="#fff" animating={mutation.isPending} hidesWhenStopped />:
-            <Text style={styles.signInText}>Sign In</Text>
-        }
-      </TouchableOpacity>
+        <LinearGradient
+          colors={['#043d80', '#02aef0']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.signInButton}
+        >
+        <TouchableOpacity  onPress={handleSubmit(onSubmit)}>
+          {mutation.isPending ?
+              <ActivityIndicator size="small" color="#fff" animating={mutation.isPending} hidesWhenStopped />:
+              <Text style={styles.signInText}>Sign In</Text>
+          }
+        </TouchableOpacity>
+      </LinearGradient>
 
       {/* Footer */}
       <View style={styles.footer}>

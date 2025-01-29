@@ -6,7 +6,7 @@ import { ShowToastWithGravity } from '@/components/utils/HotToastNotification';
 import { Colors } from '@/constants/Colors';
 import { useAuthSession } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import React, { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -23,7 +23,7 @@ type EditProfileSchema = z.infer<typeof editProfileSchema>;
 
 const EditUpdateProfileScreen = () => {
     const { token } = useAuthSession();
-
+    const queryClient = useQueryClient();
     const { data: profileData, isLoading, isError, error, isFetching } = useQuery({
         queryKey: ['profile'],
         queryFn: () => userProfile(token?.current),
@@ -32,6 +32,9 @@ const EditUpdateProfileScreen = () => {
     const mutation = useMutation({
         mutationKey: ['profileUpdate', profileData?.user?.id],
         mutationFn: userProfileUpdate,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['profile'] });
+        }
     });
 
     const methods = useForm<EditProfileSchema>({

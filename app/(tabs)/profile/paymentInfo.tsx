@@ -1,6 +1,5 @@
 import { paymentInfo, paymentInfoUpdate } from '@/Api/user';
 import RHFDatePicker from '@/components/form/RHFDatePicker';
-import RHFImagePicker from '@/components/form/RHFImagePicker';
 import RHFImagePicker2 from '@/components/form/RHFImagePicker2';
 import RHFTextInput from '@/components/form/RHFTextInput';
 import { ShowToastWithGravity } from '@/components/utils/HotToastNotification';
@@ -47,10 +46,9 @@ const PaymentInfoScreen = () => {
   const { token } = useAuthSession();
 
   // Fetch payment info
-  const { data: paymentData, isLoading, isError, refetch, isFetchedAfterMount, isFetching } = useQuery({
+  const { data: paymentData, isLoading, isError, refetch,  isFetching } = useQuery({
     queryKey: ['paymentInfo'],
     queryFn: () => paymentInfo(token?.current),
-    enabled: !!token?.current
   });
 
   const paymentInfoData = paymentData?.data?.user_details || {};
@@ -94,20 +92,19 @@ const PaymentInfoScreen = () => {
   }; 
   // Set form values when data is loaded
   useEffect(() => {
-    if (isFetchedAfterMount && paymentInfoData) {
+    if (paymentInfoData && !isLoading) {
       methods.reset({
-        name: paymentInfoData.name || "",
-        phone: paymentInfoData.phone || "",
-        address: paymentInfoData.address || "",
-        city: paymentInfoData.city || "",
-        visa_expiry_date: paymentInfoData.visa_expiry_date ? new Date(paymentInfoData.visa_expiry_date) : new Date(),
-        visa_image: paymentInfoData.visa_image || "",
-        bank_name: paymentInfoData.bank_name || "",
-        bank_account_number: paymentInfoData.bank_account_number || "",
+        name: paymentInfoData?.name || "",
+        phone: paymentInfoData?.phone || "",
+        address: paymentInfoData?.address || "",
+        city: paymentInfoData?.city || "",
+        visa_expiry_date: paymentInfoData?.visa_expiry_date ? new Date(paymentInfoData?.visa_expiry_date) : new Date(),
+        visa_image: paymentInfoData?.visa_image || "",
+        bank_name: paymentInfoData?.bank_name || "",
+        bank_account_number: paymentInfoData?.bank_account_number || "",
       });
     }
-  }, [isFetchedAfterMount, paymentInfoData]);
- 
+  }, [paymentInfoData, methods.reset, isLoading]);
 
   // Enhanced loading and error states
   if (isLoading) {
@@ -137,6 +134,9 @@ const PaymentInfoScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
+      {isFetching && (
+        <Text style={styles.loadingText}>Updating payment information...</Text>
+      )}
       <FormProvider {...methods}>
         {updateMutation.isPending && (
           <View style={[styles.centerContainer, { backgroundColor: 'rgba(255,255,255,0.7)', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1 }]}>

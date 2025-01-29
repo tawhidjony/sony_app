@@ -24,8 +24,6 @@ type ScheduleType = z.infer<typeof scheduleSchema>;
 
 export default function ProductDetailScreen() {
   const queryClient = useQueryClient();
-  console.log(queryClient);
-  
   const params = useSearchParams();
   const id = params.get('id');
   const { token } = useAuthSession();

@@ -1,11 +1,14 @@
 import { registerUser } from '@/Api';
+import { ShowToastWithGravity } from '@/components/utils/HotToastNotification';
 import { useAuthSession } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
+  ActivityIndicator,
   Image,
   StyleSheet,
   Text,
@@ -67,12 +70,13 @@ export default function RegisterScreen() {
   const onSubmit = (data: RegisterFormValues) => {
       mutation.mutateAsync(data)
       .then((response) => {
-        console.log(response);
         signUp(response.token);
-        router.replace('/(tabs)');
+        router.replace('/(tabs)/home');
       })
       .catch((err) => {
-        console.log(err);
+        if (err) {
+          ShowToastWithGravity(err?.response?.data?.error || 'Something went wrong');
+        }
       });
   };
 
@@ -168,12 +172,22 @@ export default function RegisterScreen() {
       </View>
 
       {/* Sign Up Button */}
-      <TouchableOpacity 
-        style={[styles.signUpButton, { paddingVertical: height * 0.02 }]} 
-        onPress={handleSubmit(onSubmit)}
-      >
-        <Text style={styles.signUpText}>Sign Up</Text>
-      </TouchableOpacity>
+      <LinearGradient
+          colors={['#043d80', '#02aef0']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.signUpButton, { paddingVertical: height * 0.02 }]} 
+        >
+        <TouchableOpacity 
+          
+          onPress={handleSubmit(onSubmit)}
+        >
+          {mutation.isPending ?
+                <ActivityIndicator size="small" color="#fff" animating={mutation.isPending} hidesWhenStopped />:
+                <Text style={styles.signUpText}>Sign Up</Text>
+            }
+        </TouchableOpacity>
+      </LinearGradient>
 
       {/* Footer */}
       <View style={styles.footer}>
@@ -182,6 +196,7 @@ export default function RegisterScreen() {
           <Text style={styles.signInText}>Sign In</Text>
         </TouchableOpacity>
       </View>
+
       </View>
   );
 }

@@ -55,13 +55,13 @@ export default function RootLayout() {
         }}
       />
 
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="notification"
         options={{
           title: 'Notification',
           tabBarIcon: ({ color }) => <Ionicons name="notifications-outline" size={24} color={color} />,
         }}
-      />
+      /> */}
       
       <Tabs.Screen
         name="profile"
