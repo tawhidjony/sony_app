@@ -53,27 +53,48 @@ const PaymentInfoScreen = () => {
 
   const paymentInfoData = paymentData?.data?.user_details || {};
 
+    // Form setup
+    const methods = useForm<PaymentInfoSchema>({
+      mode: 'onChange',
+      resolver: zodResolver(paymentInfoSchema),
+      defaultValues: {
+        name: "",
+        phone: "",
+        address: "",
+        city: "",
+        visa_expiry_date: new Date(),
+        visa_image: "",
+        bank_name: "",
+        bank_account_number: "",
+      }
+    });
+
+    const {reset} = methods;
+console.log(paymentData);
+
+    // Set form values when data is loaded
+    useEffect(() => {
+      if (paymentData) {
+        reset({
+          name: paymentInfoData?.name || "",
+          phone: paymentInfoData?.phone || "",
+          address: paymentInfoData?.address || "",
+          city: paymentInfoData?.city || "",
+          visa_expiry_date: paymentInfoData?.visa_expiry_date ? new Date(paymentInfoData?.visa_expiry_date) : new Date(),
+          visa_image: paymentInfoData?.visa_image || "",
+          bank_name: paymentInfoData?.bank_name || "",
+          bank_account_number: paymentInfoData?.bank_account_number || "",
+        });
+      }
+    }, [paymentData, reset]);
+
   // Update payment info mutation
   const updateMutation = useMutation({
     mutationKey: ['paymentInfoUpdate', paymentData?.data?.id],
     mutationFn: paymentInfoUpdate,
   });
 
-  // Form setup
-  const methods = useForm<PaymentInfoSchema>({
-    mode: 'onChange',
-    resolver: zodResolver(paymentInfoSchema),
-    defaultValues: {
-      name: "",
-      phone: "",
-      address: "",
-      city: "",
-      visa_expiry_date: new Date(),
-      visa_image: "",
-      bank_name: "",
-      bank_account_number: "",
-    }
-  });
+
 
 
   const onSubmit = (formData: PaymentInfoSchema) => {
@@ -90,21 +111,7 @@ const PaymentInfoScreen = () => {
       console.log(error?.response?.data);
     });
   }; 
-  // Set form values when data is loaded
-  useEffect(() => {
-    if (paymentInfoData && !isLoading) {
-      methods.reset({
-        name: paymentInfoData?.name || "",
-        phone: paymentInfoData?.phone || "",
-        address: paymentInfoData?.address || "",
-        city: paymentInfoData?.city || "",
-        visa_expiry_date: paymentInfoData?.visa_expiry_date ? new Date(paymentInfoData?.visa_expiry_date) : new Date(),
-        visa_image: paymentInfoData?.visa_image || "",
-        bank_name: paymentInfoData?.bank_name || "",
-        bank_account_number: paymentInfoData?.bank_account_number || "",
-      });
-    }
-  }, [paymentInfoData, methods.reset, isLoading]);
+
 
   // Enhanced loading and error states
   if (isLoading) {

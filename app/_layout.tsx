@@ -1,6 +1,4 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { useReactQueryDevTools } from '@dev-plugins/react-query';
 import { useFonts } from 'expo-font';
 import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -22,7 +20,7 @@ const queryClient = new QueryClient({
   },
 });
 
-export default function RootLayout():React.ReactNode {
+export default function RootLayout(): React.ReactNode {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -40,12 +38,14 @@ export default function RootLayout():React.ReactNode {
 
   return (
     <View style={{ flex: 1 }} pointerEvents="box-none">
-      <QueryClientProvider client={queryClient}>
-        <StatusBar backgroundColor={Colors.light.background} barStyle="dark-content" />
-        <AuthProvider>
-          <Slot />
-        </AuthProvider>
-      </QueryClientProvider>
+        <QueryClientProvider client={queryClient}>
+          <StatusBar backgroundColor={Colors.light.background} barStyle="dark-content" />
+          <AuthProvider>
+            <Slot />
+          </AuthProvider>
+        </QueryClientProvider>
     </View>
   );
 }
+
+
